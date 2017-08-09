@@ -1,6 +1,6 @@
 package com.score.zchain.comp
 
-import com.score.zchain.protocol.{Block, Transaction}
+import com.score.zchain.protocol.{Block, Signature, Transaction}
 
 
 trait ChainDbComp {
@@ -8,12 +8,11 @@ trait ChainDbComp {
   val chainDb: ChainDb
 
   trait ChainDb {
-
     def createTransaction(transaction: Transaction)
 
     def getTransaction(bankId: String, id: Int): Option[Transaction]
 
-    def getTransactions(): List[Transaction]
+    def getTransactions: List[Transaction]
 
     def deleteTransactions()
 
@@ -21,8 +20,9 @@ trait ChainDbComp {
 
     def getBlock(bankId: String, id: Int): Option[Block]
 
-    def getBlocks(): List[Block]
+    def getBlocks: List[Block]
 
+    def updateBlockSignature(block: Block, signature: Signature)
   }
 
 }

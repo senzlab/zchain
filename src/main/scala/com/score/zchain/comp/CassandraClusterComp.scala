@@ -1,7 +1,7 @@
 package com.score.zchain.comp
 
 import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions, Session}
-import com.score.zchain.config.Config
+import com.score.zchain.config.DbConf
 
 /**
   * Cassandra database related configuration, we wrapped them with
@@ -9,7 +9,7 @@ import com.score.zchain.config.Config
   *
   * @author eranga herath(erangaeb@gmail.com)
   */
-trait CassandraClusterComp extends Config {
+trait CassandraClusterComp extends DbConf {
   lazy val poolingOptions: PoolingOptions = {
     new PoolingOptions()
       .setConnectionsPerHost(HostDistance.LOCAL, 4, 10)
