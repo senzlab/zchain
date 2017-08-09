@@ -23,7 +23,17 @@ CREATE TABLE transactions (
     PRIMARY KEY(bank_id, id)
 )
 
-CREATE TABLE blocks (
+CREATE TABLE block_chain (
+    bank_id TEXT,
+    id INT,
+    transactions SET<frozen <transaction>>,
+    signatures SET<frozen <signature>>,
+    timestamp BIGINT,
+
+    PRIMARY KEY(bank_id, id)
+)
+
+CREATE TABLE key_chain (
     bank_id TEXT,
     id INT,
     transactions SET<frozen <transaction>>,

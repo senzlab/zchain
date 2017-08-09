@@ -19,8 +19,8 @@ trait ChainDbCompImpl extends ChainDbComp {
       val statement = QueryBuilder.insertInto("transactions")
         .value("bank_id", transaction.bankId)
         .value("id", transaction.id)
-        .value("from", transaction.from)
-        .value("to", transaction.to)
+        .value("from_acc", transaction.from)
+        .value("to_acc", transaction.to)
         .value("amount", transaction.amount)
         .value("timestamp", transaction.timestamp)
 
@@ -51,7 +51,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       // get all transactions
       val resultSet = session.execute(selectStmt)
       resultSet.all().asScala.map { row =>
-        Transaction(row.getString("bank_id"), row.getInt("id"), row.getString("from"), row.getString("to"), row.getInt("amount"), row.getLong("timestamp"))
+        Transaction(row.getString("bank_id"), row.getInt("id"), row.getString("from_acc"), row.getString("to_acc"), row.getInt("amount"), row.getLong("timestamp"))
       }.toList
     }
 
@@ -71,7 +71,7 @@ trait ChainDbCompImpl extends ChainDbComp {
           .setString("from_acc", t.from)
           .setString("to_acc", t.to)
           .setInt("amount", t.amount)
-          .setLong("to_acc", t.timestamp)
+          .setLong("timestamp", t.timestamp)
       ).asJava
 
       // insert query
@@ -121,16 +121,33 @@ trait ChainDbCompImpl extends ChainDbComp {
           Transaction(t.getString("bank_id"), t.getInt("id"), t.getString("from_acc"), t.getString("to_acc"), t.getInt("amount"), t.getLong("timestamp"))
         ).toList
 
+        // get signatures
+
         // create block
         Block(row.getString("bank_id"), row.getInt("id"), trans, List(), row.getLong("timestamp"))
       }.toList
     }
 
-
     def updateBlockSignature(block: Block, signature: Signature) = {
+      // signature type
       val sigType = cluster.getMetadata.getKeyspace("senz").getUserType("signature")
 
-      // TODO update block with new signature
+      // signature
+      val sig = sigType.newValue.setString("bank_id", signature.bankId).setString("digsig", signature.digsig)
+
+      // existing signatures
+      val sigs = block.signatures.map(s =>
+        sigType.newValue
+          .setString("bank_id", s.bankId)
+          .setString("id", s.digsig)
+      ) :+ sig
+
+      // update query
+      val statement = QueryBuilder.update("blocks")
+        .`with`(QueryBuilder.add("signatures", sig))
+        .where(QueryBuilder.eq("bank_id", "sdbltrans")).and(QueryBuilder.eq("id", 613))
+
+      session.execute(statement)
     }
   }
 
