@@ -1,6 +1,6 @@
 package com.score.zchain.comp
 
-import com.score.zchain.protocol.Transaction
+import com.score.zchain.protocol.{Block, Transaction}
 
 
 trait ChainDbComp {
@@ -13,13 +13,15 @@ trait ChainDbComp {
 
     def getTransaction(bankId: String, id: Int): Option[Transaction]
 
-    def getTransactions: List[Transaction]
+    def getTransactions(): List[Transaction]
 
     def deleteTransactions()
 
-    def createBlock()
+    def createBlock(block: Block)
 
-    def getBlock()
+    def getBlock(bankId: String, id: Int): Option[Block]
+
+    def getBlocks(): List[Block]
 
   }
 

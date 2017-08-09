@@ -4,7 +4,7 @@ CREATE TYPE transaction (
     from_acc TEXT,
     to_acc TEXT,
     amount INT,
-    time LONG
+    timestamp LONG
 );
 
 CREATE TYPE sign {
@@ -28,6 +28,6 @@ CREATE TABLE blocks {
     id INT,
     transactions SET<frozen <transaction>>,
     signs SET<frozen <sign>>,
-    time LONG,
+    timestamp LONG,
     PRIMARY KEY(bank_id, id)
 }
