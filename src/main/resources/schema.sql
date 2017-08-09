@@ -4,13 +4,13 @@ CREATE TYPE transaction (
     from_acc TEXT,
     to_acc TEXT,
     amount INT,
-    timestamp LONG
-);
+    timestamp BIGINT
+)
 
-CREATE TYPE sign {
+CREATE TYPE signature (
     bank_id TEXT,
     digsig TEXT
-}
+)
 
 CREATE TABLE transactions (
     bank_id TEXT,
@@ -18,16 +18,17 @@ CREATE TABLE transactions (
     from_acc TEXT,
     to_acc TEXT,
     amount INT,
-    time LONG
+    timestamp BIGINT,
 
     PRIMARY KEY(bank_id, id)
-);
+)
 
-CREATE TABLE blocks {
+CREATE TABLE blocks (
     bank_id TEXT,
     id INT,
     transactions SET<frozen <transaction>>,
-    signs SET<frozen <sign>>,
-    timestamp LONG,
+    signatures SET<frozen <signature>>,
+    timestamp BIGINT,
+
     PRIMARY KEY(bank_id, id)
-}
+)

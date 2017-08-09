@@ -1,4 +1,4 @@
-package util
+package com.score.zchain.util
 
 import java.io.{PrintWriter, StringWriter}
 

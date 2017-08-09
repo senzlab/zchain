@@ -14,7 +14,7 @@ trait Config {
   val config = ConfigFactory.load()
 
   // cassandra config
-  lazy val cassandraKeyspace = Try(config.getString("cassandra.keyspace")).getOrElse("senz")
+  lazy val cassandraKeyspace = Try(config.getString("cassandra.keyspace")).getOrElse("zchain")
   lazy val cassandraHost = Try(config.getString("cassandra.host")).getOrElse("dev.localhost")
   lazy val cassandraPort = Try(config.getInt("cassandra.port")).getOrElse(9042)
 }
