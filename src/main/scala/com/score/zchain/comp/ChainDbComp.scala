@@ -16,7 +16,7 @@ trait ChainDbComp {
 
     def getTransactions: List[Transaction]
 
-    def deleteTransactions()
+    def deleteTransactions(transactions: List[Transaction])
 
     def createBlock(block: Block)
 

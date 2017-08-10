@@ -57,8 +57,15 @@ trait ChainDbCompImpl extends ChainDbComp {
       }.toList
     }
 
-    def deleteTransactions() = {
+    def deleteTransactions(transactions: List[Transaction]) = {
+      for (t <- transactions) {
+        // delete query
+        val delStmt = delete()
+          .from("transactions")
+          .where(QueryBuilder.eq("bank_id", t.bankId)).and(QueryBuilder.eq("id", t.id))
 
+        session.execute(delStmt)
+      }
     }
 
     def createBlock(block: Block) = {
@@ -145,7 +152,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       // signature
       val sig = sigType.newValue.setString("bank_id", signature.bankId).setString("digsig", signature.digsig)
 
-      // existing signatures
+      // existing signatures + new signature
       val sigs = block.signatures.map(s =>
         sigType.newValue
           .setString("bank_id", s.bankId)
@@ -155,7 +162,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       // update query
       val statement = QueryBuilder.update("blocks")
         .`with`(QueryBuilder.add("signatures", sig))
-        .where(QueryBuilder.eq("bank_id", "sdbltrans")).and(QueryBuilder.eq("id", 613))
+        .where(QueryBuilder.eq("bank_id", block.bankId)).and(QueryBuilder.eq("id", block.id))
 
       session.execute(statement)
     }
