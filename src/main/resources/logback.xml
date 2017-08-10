@@ -6,7 +6,7 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/trans.log</file>
+        <file>logs/zchain.log</file>
         <append>true</append>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%logger] %msg%n</pattern>
@@ -14,14 +14,14 @@
     </appender>
 
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/trans.log</file>
+        <file>logs/zchain.log</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%logger] %msg%n</pattern>
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>logs/archived/trans.%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>logs/archived/zchain.%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>50MB</maxFileSize>
