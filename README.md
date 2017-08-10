@@ -2,8 +2,8 @@
 
 ## about zchain
 
-Blockchain implementation based on apache cassandra distributed database. We implemented all consensus 
-based on cassandra cluster
+blockchain implementation based on apache cassandra distributed database. We implemented all consensus 
+based on cassandra cluster with scala langauge
 
 ## run cassandra 
 
@@ -79,3 +79,7 @@ CREATE TABLE key_chain (
     PRIMARY KEY(bank_id, id)
 )
 ```
+
+## run zchain
+
+Simply run main method. We will dockerize this project later
