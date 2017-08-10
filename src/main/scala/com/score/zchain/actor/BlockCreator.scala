@@ -29,6 +29,7 @@ class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp 
   override def receive = {
     case Create =>
       // for testing purpose we create trans here
+      // TODO remove this
       chainDb.createTransaction(Transaction(bankId = senzieName, from = "4344555", to = "755555", amount = 340, timestamp = 899322L))
 
       // take transactions from db and create block
@@ -41,14 +42,14 @@ class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp 
         val signer = context.actorOf(BlockSigner.props)
         signer ! Sign(Option(block), None, None)
 
-        // TODO 3. send GET #sign <block_id> msg to every peer and wait till sign response coming
+        // TODO 3. send GET #sign <block_id> senz to every peer and wait till sign response coming
 
         // TODO 4. when all peers sing the block, mark block as confirmed
 
         // TODO 5. delete all transaction saved in the block from transactions table
       }
 
-      // reschedule to watch
+      // reschedule to create
       context.system.scheduler.scheduleOnce(20.seconds, self, Create)
   }
 }

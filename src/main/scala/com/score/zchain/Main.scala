@@ -16,7 +16,7 @@ object Main extends App {
   SenzFactory.setupKeys()
 
   // start watcher actor
-  val creator = system.actorOf(BlockCreator.props, name = "TransactionWatcher")
+  val creator = system.actorOf(BlockCreator.props, name = "BlockCreator")
   creator ! Create
 
 }
