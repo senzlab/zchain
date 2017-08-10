@@ -1,19 +1,17 @@
 # zchain
 
-## About zchain
-
 Blockchain implementation based on apache cassandra distributed database. We implemented all consensus 
-based on cassandra cluster with scala langauge
+based on cassandra cluster with scala language
 
-## Run cassandra 
+# Set up and run
+
+## 1. Run cassandra 
 
 ```
 docker run -d -p 9160:9160 -p 9042:9042 erangaeb/cassandra:0.2
 ```
 
-## Create keyspace and tables
-
-First connect to cassandra via cqlsh 
+## 2. Connects to cassandra 
 
 ```
 # command
@@ -23,13 +21,13 @@ cqlsh <docker host> 9042 --cqlversion="3.4.4"
 cqlsh localhost 9042 --cqlversion="3.4.4"
 ```
 
-Then create keyspace
+## 3. Create keyspace
 
 ```
 CREATE KEYSPACE zchain WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1}
 ```
 
-Finally create tables and user define types(UDT's)
+## 4. Create tables
 
 ```
 CREATE TYPE transaction (
@@ -78,6 +76,6 @@ CREATE TABLE key_chain (
 )
 ```
 
-## Run zchain
+## 5. Run zchain
 
 Simply run main method. We will dockerize this project later
