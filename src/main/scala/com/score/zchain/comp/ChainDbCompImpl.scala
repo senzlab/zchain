@@ -70,7 +70,7 @@ trait ChainDbCompImpl extends ChainDbComp {
 
     def createBlock(block: Block) = {
       // UDT's
-      val transType = cluster.getMetadata.getKeyspace("senz").getUserType("transaction")
+      val transType = cluster.getMetadata.getKeyspace("zchain").getUserType("transaction")
 
       // transactions
       val trans = block.transactions.map(t =>
@@ -147,7 +147,7 @@ trait ChainDbCompImpl extends ChainDbComp {
 
     def updateBlockSignature(block: Block, signature: Signature) = {
       // signature type
-      val sigType = cluster.getMetadata.getKeyspace("senz").getUserType("signature")
+      val sigType = cluster.getMetadata.getKeyspace("zchain").getUserType("signature")
 
       // signature
       val sig = sigType.newValue.setString("bank_id", signature.bankId).setString("digsig", signature.digsig)

@@ -30,12 +30,12 @@ class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp 
     case Create =>
       // for testing purpose we create trans here
       // TODO remove this
-      chainDb.createTransaction(Transaction(bankId = senzieName, from = "4344555", to = "755555", amount = 340, timestamp = 899322L))
+      chainDb.createTransaction(Transaction(bankId = senzieName, from = "4344555", to = "755555", amount = 340, timestamp = System.currentTimeMillis)
 
       // take transactions from db and create block
       val trans = chainDb.getTransactions
       if (trans.nonEmpty) {
-        val block = Block(bankId = senzieName, transactions = trans, timestamp = 5644444)
+        val block = Block(bankId = senzieName, transactions = trans, timestamp = System.currentTimeMillis)
         chainDb.createBlock(block)
 
         // start another actor to sign the block

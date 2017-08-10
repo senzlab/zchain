@@ -1,11 +1,12 @@
+CREATE KEYSPACE zchain WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1}
+
 CREATE TYPE transaction (
     bank_id TEXT,
     id UUID,
     from_acc TEXT,
     to_acc TEXT,
     amount INT,
-    timestamp BIGINT,
-    digsig TEXT
+    timestamp BIGINT
 )
 
 CREATE TYPE signature (
@@ -20,12 +21,11 @@ CREATE TABLE transactions (
     to_acc TEXT,
     amount INT,
     timestamp BIGINT,
-    digsig TEXT,
 
     PRIMARY KEY(bank_id, id)
 )
 
-CREATE TABLE block_chain (
+CREATE TABLE blocks (
     bank_id TEXT,
     id UUID,
     transactions SET<frozen <transaction>>,
