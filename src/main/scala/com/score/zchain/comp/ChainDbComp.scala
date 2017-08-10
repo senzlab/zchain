@@ -1,5 +1,7 @@
 package com.score.zchain.comp
 
+import java.util.UUID
+
 import com.score.zchain.protocol.{Block, Signature, Transaction}
 
 
@@ -10,7 +12,7 @@ trait ChainDbComp {
   trait ChainDb {
     def createTransaction(transaction: Transaction)
 
-    def getTransaction(bankId: String, id: Int): Option[Transaction]
+    def getTransaction(bankId: String, id: UUID): Option[Transaction]
 
     def getTransactions: List[Transaction]
 
@@ -18,7 +20,7 @@ trait ChainDbComp {
 
     def createBlock(block: Block)
 
-    def getBlock(bankId: String, id: Int): Option[Block]
+    def getBlock(bankId: String, id: UUID): Option[Block]
 
     def getBlocks: List[Block]
 

@@ -1,8 +1,8 @@
 package com.score.zchain
 
 import akka.actor.ActorSystem
-import com.score.zchain.actor.TransactionWatcher
-import com.score.zchain.actor.TransactionWatcher.Watch
+import com.score.zchain.actor.BlockCreator
+import com.score.zchain.actor.BlockCreator.Create
 import com.score.zchain.util.SenzFactory
 
 object Main extends App {
@@ -12,8 +12,11 @@ object Main extends App {
   // setup logging
   SenzFactory.setupLogging()
 
+  // setup keys
+  SenzFactory.setupKeys()
+
   // start watcher actor
-  val watcher = system.actorOf(TransactionWatcher.props, name = "TransactionWatcher")
-  watcher ! Watch
+  val creator = system.actorOf(BlockCreator.props, name = "TransactionWatcher")
+  creator ! Create
 
 }

@@ -1,4 +1,8 @@
 package com.score.zchain.protocol
 
-case class Transaction(bankId: String, id: Int, from: String, to: String, amount: Int, timestamp: Long)
+import java.util.UUID
+
+import com.datastax.driver.core.utils.UUIDs
+
+case class Transaction(bankId: String, id: UUID = UUIDs.random(), from: String, to: String, amount: Int, timestamp: Long)
 

@@ -2,6 +2,7 @@ package com.score.zchain.util
 
 import ch.qos.logback.classic.{Level, Logger}
 import com.score.zchain.config.AppConf
+import com.score.zchain.crypto.RSAFactory
 import org.slf4j.LoggerFactory
 
 object SenzFactory extends AppConf {
@@ -19,6 +20,6 @@ object SenzFactory extends AppConf {
   }
 
   val setupKeys = () => {
-    //RSAUtils.initRSAKeys()
+    RSAFactory.initRSAKeys()
   }
 }
