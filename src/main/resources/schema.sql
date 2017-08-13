@@ -1,6 +1,10 @@
-CREATE KEYSPACE zchain WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1}
+CREATE KEYSPACE IF NOT EXISTS zchain
+    WITH REPLICATION = {
+        'class' : 'SimpleStrategy',
+        'replication_factor': 1
+    }
 
-CREATE TYPE transaction (
+CREATE TYPE IF NOT EXISTS transaction (
     bank_id TEXT,
     id UUID,
     from_acc TEXT,
@@ -9,12 +13,12 @@ CREATE TYPE transaction (
     timestamp BIGINT
 )
 
-CREATE TYPE signature (
+CREATE TYPE IF NOT EXISTS signature (
     bank_id TEXT,
     digsig TEXT
 )
 
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     bank_id TEXT,
     id UUID,
     from_acc TEXT,
@@ -25,7 +29,7 @@ CREATE TABLE transactions (
     PRIMARY KEY(bank_id, id)
 )
 
-CREATE TABLE blocks (
+CREATE TABLE IF NOT EXISTS blocks (
     bank_id TEXT,
     id UUID,
     transactions SET<frozen <transaction>>,
@@ -35,7 +39,7 @@ CREATE TABLE blocks (
     PRIMARY KEY(bank_id, id)
 )
 
-CREATE TABLE key_chain (
+CREATE TABLE IF NOT EXISTS key_chain (
     bank_id TEXT,
     id UUID,
     transactions SET<frozen <transaction>>,

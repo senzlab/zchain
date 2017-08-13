@@ -14,7 +14,7 @@ trait DbConf {
   val dbConf = ConfigFactory.load("database.conf")
 
   // cassandra config
-  lazy val cassandraKeyspace = Try(dbConf.getString("cassandra.keyspace")).getOrElse("zchain")
-  lazy val cassandraHost = Try(dbConf.getString("cassandra.host")).getOrElse("dev.localhost")
-  lazy val cassandraPort = Try(dbConf.getInt("cassandra.port")).getOrElse(9042)
+  lazy val cassandraKeyspace = Try(dbConf.getString("db.cassandra.keyspace")).getOrElse("zchain")
+  lazy val cassandraHost = Try(dbConf.getString("db.cassandra.host")).getOrElse("dev.localhost")
+  lazy val cassandraPort = Try(dbConf.getInt("db.cassandra.port")).getOrElse(9042)
 }
