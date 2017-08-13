@@ -1,4 +1,4 @@
-package com.score.zchain.crypto
+package com.score.zchain.util
 
 import java.io.{File, FileInputStream, FileOutputStream}
 import java.security._

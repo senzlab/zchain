@@ -7,19 +7,16 @@ import com.score.zchain.util.{DbFactory, SenzFactory}
 
 object Main extends App {
 
-  implicit val system = ActorSystem("senz")
-
-  // setup logging
+  // first
+  //  1. setup logging
+  //  2. setup keys
+  //  3. setup db
   SenzFactory.setupLogging()
-
-  // setup keys
   SenzFactory.setupKeys()
-
-  // setup db
   DbFactory.initDb()
 
-  // start watcher actor
-  val creator = system.actorOf(BlockCreator.props, name = "BlockCreator")
-  creator ! Create
+  // start block creator
+  implicit val system = ActorSystem("senz")
+  system.actorOf(BlockCreator.props, name = "BlockCreator") ! Create
 
 }
