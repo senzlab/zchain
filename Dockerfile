@@ -20,6 +20,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 # set service variables
 ENV SENZIE_NAME sampath
+ENV SENZIE_MODE DEV
 ENV SWITCH_HOST dev.localhost
 ENV SWITCH_PORT 7070
 ENV CASSANDRA_HOST dev.localhost
