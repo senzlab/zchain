@@ -58,6 +58,7 @@ CREATE TABLE transactions (
 CREATE TABLE blocks (
     bank_id TEXT,
     id UUID,
+    hash TEXT,
     transactions SET<frozen <transaction>>,
     signatures SET<frozen <signature>>,
     timestamp BIGINT,
