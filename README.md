@@ -44,7 +44,7 @@ CREATE TYPE signature (
     digsig TEXT
 )
 
-CREATE TABLE transactions (
+CREATE TABLE zchain.transactions (
     bank_id TEXT,
     id UUID,
     from_acc TEXT,
@@ -55,7 +55,7 @@ CREATE TABLE transactions (
     PRIMARY KEY(bank_id, id)
 )
 
-CREATE TABLE blocks (
+CREATE TABLE zchain.blocks (
     bank_id TEXT,
     id UUID,
     hash TEXT,
@@ -66,7 +66,7 @@ CREATE TABLE blocks (
     PRIMARY KEY(bank_id, id)
 )
 
-CREATE TABLE key_chain (
+CREATE TABLE zchain.keys (
     bank_id TEXT,
     id UUID,
     transactions SET<frozen <transaction>>,
