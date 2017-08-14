@@ -87,6 +87,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       val statement = QueryBuilder.insertInto("blocks")
         .value("bank_id", block.bankId)
         .value("id", block.id)
+        .value("hash", block.hash)
         .value("transactions", trans)
         .value("timestamp", block.timestamp)
 
@@ -116,7 +117,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         ).toList
 
         // create block
-        Option(Block(bankId, id, trans, sigs, row.getLong("timestamp")))
+        Option(Block(bankId, id, row.getString("hash"), trans, sigs, row.getLong("timestamp")))
       }
       else None
     }
@@ -141,7 +142,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         ).toList
 
         // create block
-        Block(row.getString("bank_id"), row.getUUID("id"), trans, sigs, row.getLong("timestamp"))
+        Block(row.getString("bank_id"), row.getUUID("id"), row.getString("hash"), trans, sigs, row.getLong("timestamp"))
       }.toList
     }
 

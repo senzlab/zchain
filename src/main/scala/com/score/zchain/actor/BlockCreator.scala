@@ -5,7 +5,7 @@ import com.score.zchain.actor.BlockSigner.{Sign, SignResp}
 import com.score.zchain.comp.{CassandraClusterComp, ChainDbCompImpl}
 import com.score.zchain.config.AppConf
 import com.score.zchain.protocol.{Block, Transaction}
-import com.score.zchain.util.SenzLogger
+import com.score.zchain.util.{BlockFactory, SenzLogger}
 
 import scala.concurrent.duration._
 
@@ -36,7 +36,7 @@ class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp 
       // take transactions from db and create block
       val trans = chainDb.getTransactions
       if (trans.nonEmpty) {
-        val block = Block(bankId = senzieName, transactions = trans, timestamp = System.currentTimeMillis)
+        val block = Block(bankId = senzieName, hash = BlockFactory.markleHash(trans) ,transactions = trans, timestamp = System.currentTimeMillis)
         chainDb.createBlock(block)
 
         // start another actor to sign the block

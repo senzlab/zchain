@@ -6,9 +6,7 @@ import akka.actor.{Actor, Props}
 import com.score.zchain.comp.{CassandraClusterComp, ChainDbCompImpl}
 import com.score.zchain.config.AppConf
 import com.score.zchain.protocol.{Block, Signature}
-import com.score.zchain.util.SenzLogger
-
-import scala.util.Random
+import com.score.zchain.util.{RSAFactory, SenzLogger}
 
 object BlockSigner {
 
@@ -30,8 +28,8 @@ class BlockSigner extends Actor with ChainDbCompImpl with CassandraClusterComp w
 
   override def receive = {
     case Sign(Some(block), _, _) =>
-      // TODO generate signature of the block
-      val sig = s"sig${Random.nextInt(1000)}"
+      // sign block hash
+      val sig = RSAFactory.sign(block.hash)
 
       // update signature in db
       chainDb.updateBlockSignature(block, Signature(senzieName, sig))
@@ -45,8 +43,8 @@ class BlockSigner extends Actor with ChainDbCompImpl with CassandraClusterComp w
       // extract block from db
       chainDb.getBlock(bankId, blockId) match {
         case Some(b) =>
-          // TODO generate signature of the block
-          val sig = s"sig${Random.nextInt(1000)}"
+          // sign block hash
+          val sig = RSAFactory.sign(b.hash)
 
           // update signature in db
           chainDb.updateBlockSignature(b, Signature(senzieName, sig))

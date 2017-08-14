@@ -77,7 +77,7 @@ object RSAFactory extends AppConf {
     new BASE64Encoder().encode(publicKeyStream).replaceAll("\n", "").replaceAll("\r", "")
   }
 
-  def signSenz(payload: String) = {
+  def sign(payload: String) = {
     // get private key via key pair
     val keyPair = loadRSAKeyPair()
     val privateKey = keyPair.getPrivate
@@ -91,7 +91,7 @@ object RSAFactory extends AppConf {
     new BASE64Encoder().encode(signature.sign).replaceAll("\n", "").replaceAll("\r", "")
   }
 
-  def verifySenzSignature(payload: String, signedPayload: String) = {
+  def verifySignature(payload: String, signedPayload: String) = {
     // get public key via key pair
     val keyPair = loadRSAKeyPair()
     val publicKey = keyPair.getPublic
@@ -115,6 +115,13 @@ object RSAFactory extends AppConf {
     val cipher: Cipher = Cipher.getInstance("RSA")
     cipher.init(Cipher.DECRYPT_MODE, privateKey)
     new String(cipher.doFinal(payload))
+  }
+
+  def sha256(payload: String) = {
+    val digest = MessageDigest.getInstance("SHA-256")
+    val hash = digest.digest(payload.getBytes)
+
+    new BASE64Encoder().encode(hash).replaceAll("\n", "").replaceAll("\r", "")
   }
 
 }
