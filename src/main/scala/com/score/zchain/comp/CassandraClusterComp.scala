@@ -9,19 +9,19 @@ import com.score.zchain.config.DbConf
   *
   * @author eranga herath(erangaeb@gmail.com)
   */
-trait CassandraClusterComp extends DbConf {
-  lazy val poolingOptions: PoolingOptions = {
-    new PoolingOptions()
-      .setConnectionsPerHost(HostDistance.LOCAL, 4, 10)
-      .setConnectionsPerHost(HostDistance.REMOTE, 2, 4)
-  }
-
-  lazy val cluster: Cluster = {
-    Cluster.builder()
-      .addContactPoint(cassandraHost)
-      .withPoolingOptions(poolingOptions)
-      .build()
-  }
-
-  lazy val session: Session = cluster.connect(cassandraKeyspace)
+object CassandraClusterComp extends DbConf {
+//  lazy val poolingOptions: PoolingOptions = {
+//    new PoolingOptions()
+//      .setConnectionsPerHost(HostDistance.LOCAL, 4, 10)
+//      .setConnectionsPerHost(HostDistance.REMOTE, 2, 4)
+//  }
+//
+//  lazy val cluster: Cluster = {
+//    Cluster.builder()
+//      .addContactPoint(cassandraHost)
+//      .withPoolingOptions(poolingOptions)
+//      .build()
+//  }
+//
+//  lazy val session: Session = cluster.connect(cassandraKeyspace)
 }

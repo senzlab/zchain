@@ -6,12 +6,11 @@ import com.datastax.driver.core.UDTValue
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.driver.core.querybuilder.QueryBuilder._
 import com.score.zchain.protocol.{Block, Signature, Transaction}
+import com.score.zchain.util.DbFactory
 
 import scala.collection.JavaConverters._
 
 trait ChainDbCompImpl extends ChainDbComp {
-
-  this: CassandraClusterComp =>
 
   val chainDb = new ChainDbImpl
 
@@ -26,7 +25,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .value("amount", transaction.amount)
         .value("timestamp", transaction.timestamp)
 
-      session.execute(statement)
+      DbFactory.session.execute(statement)
     }
 
     def getTransaction(bankId: String, id: UUID): Option[Transaction] = {
@@ -37,7 +36,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .where(QueryBuilder.eq("bank_id", bankId)).and(QueryBuilder.eq("id", id))
         .limit(1)
 
-      val resultSet = session.execute(selectStmt)
+      val resultSet = DbFactory.session.execute(selectStmt)
       val row = resultSet.one()
 
       if (row != null) Option(Transaction(bankId, id, row.getString("from"), row.getString("to"), row.getInt("amount"), row.getLong("timestamp")))
@@ -51,7 +50,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .from("transactions")
 
       // get all transactions
-      val resultSet = session.execute(selectStmt)
+      val resultSet = DbFactory.session.execute(selectStmt)
       resultSet.all().asScala.map { row =>
         Transaction(row.getString("bank_id"), row.getUUID("id"), row.getString("from_acc"), row.getString("to_acc"), row.getInt("amount"), row.getLong("timestamp"))
       }.toList
@@ -64,13 +63,13 @@ trait ChainDbCompImpl extends ChainDbComp {
           .from("transactions")
           .where(QueryBuilder.eq("bank_id", t.bankId)).and(QueryBuilder.eq("id", t.id))
 
-        session.execute(delStmt)
+        DbFactory.session.execute(delStmt)
       }
     }
 
     def createBlock(block: Block) = {
       // UDT's
-      val transType = cluster.getMetadata.getKeyspace("zchain").getUserType("transaction")
+      val transType = DbFactory.cluster.getMetadata.getKeyspace("zchain").getUserType("transaction")
 
       // transactions
       val trans = block.transactions.map(t =>
@@ -91,7 +90,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .value("transactions", trans)
         .value("timestamp", block.timestamp)
 
-      session.execute(statement)
+      DbFactory.session.execute(statement)
     }
 
     def getBlock(bankId: String, id: UUID): Option[Block] = {
@@ -102,7 +101,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .where(QueryBuilder.eq("bank_id", bankId)).and(QueryBuilder.eq("id", id))
         .limit(1)
 
-      val resultSet = session.execute(selectStmt)
+      val resultSet = DbFactory.session.execute(selectStmt)
       val row = resultSet.one()
 
       if (row != null) {
@@ -129,7 +128,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .from("blocks")
 
       // get all transactions
-      val resultSet = session.execute(selectStmt)
+      val resultSet = DbFactory.session.execute(selectStmt)
       resultSet.all().asScala.map { row =>
         // get transactions
         val trans = row.getSet("transactions", classOf[UDTValue]).asScala.map(t =>
@@ -148,7 +147,7 @@ trait ChainDbCompImpl extends ChainDbComp {
 
     def updateBlockSignature(block: Block, signature: Signature) = {
       // signature type
-      val sigType = cluster.getMetadata.getKeyspace("zchain").getUserType("signature")
+      val sigType = DbFactory.cluster.getMetadata.getKeyspace("zchain").getUserType("signature")
 
       // signature
       val sig = sigType.newValue.setString("bank_id", signature.bankId).setString("digsig", signature.digsig)
@@ -165,7 +164,7 @@ trait ChainDbCompImpl extends ChainDbComp {
         .`with`(QueryBuilder.add("signatures", sig))
         .where(QueryBuilder.eq("bank_id", block.bankId)).and(QueryBuilder.eq("id", block.id))
 
-      session.execute(statement)
+      DbFactory.session.execute(statement)
     }
   }
 

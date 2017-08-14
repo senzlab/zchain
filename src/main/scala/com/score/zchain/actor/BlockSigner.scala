@@ -3,7 +3,7 @@ package com.score.zchain.actor
 import java.util.UUID
 
 import akka.actor.{Actor, Props}
-import com.score.zchain.comp.{CassandraClusterComp, ChainDbCompImpl}
+import com.score.zchain.comp.ChainDbCompImpl
 import com.score.zchain.config.AppConf
 import com.score.zchain.protocol.{Block, Signature}
 import com.score.zchain.util.{RSAFactory, SenzLogger}
@@ -18,7 +18,7 @@ object BlockSigner {
 
 }
 
-class BlockSigner extends Actor with ChainDbCompImpl with CassandraClusterComp with AppConf with SenzLogger {
+class BlockSigner extends Actor with ChainDbCompImpl with AppConf with SenzLogger {
 
   import BlockSigner._
 

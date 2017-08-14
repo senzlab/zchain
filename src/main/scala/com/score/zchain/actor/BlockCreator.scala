@@ -2,7 +2,7 @@ package com.score.zchain.actor
 
 import akka.actor.{Actor, Props}
 import com.score.zchain.actor.BlockSigner.{Sign, SignResp}
-import com.score.zchain.comp.{CassandraClusterComp, ChainDbCompImpl}
+import com.score.zchain.comp.ChainDbCompImpl
 import com.score.zchain.config.AppConf
 import com.score.zchain.protocol.Block
 import com.score.zchain.util.{BlockFactory, SenzLogger}
@@ -17,7 +17,7 @@ object BlockCreator {
 
 }
 
-class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp with AppConf with SenzLogger {
+class BlockCreator extends Actor with ChainDbCompImpl with AppConf with SenzLogger {
 
   import BlockCreator._
   import context._
@@ -34,6 +34,8 @@ class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp 
         val block = Block(bankId = senzieName, hash = BlockFactory.markleHash(trans), transactions = trans, timestamp = System.currentTimeMillis)
         chainDb.createBlock(block)
 
+        logger.debug("block created, send to sign ")
+
         // start another actor to sign the block
         val signer = context.actorOf(BlockSigner.props)
         signer ! Sign(Option(block), None, None)
@@ -42,12 +44,14 @@ class BlockCreator extends Actor with ChainDbCompImpl with CassandraClusterComp 
         chainDb.deleteTransactions(block.transactions)
       } else {
         // reschedule to create
+        logger.debug("No transactions, reschedule " + context.self.path)
         context.system.scheduler.scheduleOnce(20.seconds, self, Create)
       }
     case SignResp(Some(block), _, _, signed) =>
       // TODO send GET #sign <block_id> senz to every peer and wait till sign response coming
 
       // reschedule to create
+      logger.debug("Signed block, reschedule " + context.self.path)
       context.system.scheduler.scheduleOnce(20.seconds, self, Create)
     case SignResp(None, bankId, blockId, signed) =>
     // TODO when all peers sing the block, mark block as confirmed

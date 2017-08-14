@@ -1,9 +1,25 @@
 package com.score.zchain.util
 
-import com.score.zchain.comp.CassandraClusterComp
-import com.score.zchain.config.SchemaConf
+import com.datastax.driver.core.{Cluster, HostDistance, PoolingOptions, Session}
+import com.score.zchain.config.{DbConf, SchemaConf}
 
-object DbFactory extends CassandraClusterComp with SchemaConf {
+object DbFactory extends DbConf with SchemaConf {
+
+  lazy val poolingOptions: PoolingOptions = {
+    new PoolingOptions()
+      .setConnectionsPerHost(HostDistance.LOCAL, 4, 10)
+      .setConnectionsPerHost(HostDistance.REMOTE, 2, 4)
+  }
+
+  lazy val cluster: Cluster = {
+    Cluster.builder()
+      .addContactPoint(cassandraHost)
+      .withPoolingOptions(poolingOptions)
+      .build()
+  }
+
+  lazy val session: Session = cluster.connect(cassandraKeyspace)
+
   val initDb = () => {
     // TODO we disabled this
     // session.execute(schemaCreateKeyspace)
@@ -16,4 +32,5 @@ object DbFactory extends CassandraClusterComp with SchemaConf {
     session.execute(schemaCreateTableTransactions)
     session.execute(schemaCreateTableBlocks)
   }
+
 }
