@@ -15,6 +15,7 @@ libraryDependencies ++= {
     "com.typesafe.akka"       %% "akka-actor"               % akkaVersion,
     "com.typesafe.akka"       %% "akka-slf4j"               % akkaVersion,
     "com.typesafe.slick"      %% "slick"                    % slickVersion,
+    "org.scalaz"              %% "scalaz-core"              % "7.2.15",
     "com.datastax.cassandra"  % "cassandra-driver-core"     % cassandraVersion,
     "c3p0"                    % "c3p0"                      % "0.9.1.2",
     "org.slf4j"               % "slf4j-api"                 % "1.7.5",

@@ -4,14 +4,17 @@ import akka.actor.{Actor, Props}
 import com.score.zchain.actor.BlockSigner.{Sign, SignResp}
 import com.score.zchain.comp.ChainDbCompImpl
 import com.score.zchain.config.AppConf
-import com.score.zchain.protocol.Block
+import com.score.zchain.protocol.{Block, Transaction}
 import com.score.zchain.util.{BlockFactory, SenzLogger}
+import scalaz.Scalaz._
 
 import scala.concurrent.duration._
 
 object BlockCreator {
 
   case class Create()
+
+  case class Bal(bank: String, in: Int, out: Int)
 
   def props = Props(classOf[BlockCreator])
 
@@ -22,15 +25,25 @@ class BlockCreator extends Actor with ChainDbCompImpl with AppConf with SenzLogg
   import BlockCreator._
   import context._
 
-  override def preStart() = {
+  override def preStart(): Unit = {
     logger.debug("Start actor: " + context.self.path)
   }
 
-  override def receive = {
+  override def receive: Receive = {
     case Create =>
       // take transactions from db and create block
       val trans = chainDb.getTransactions
       if (trans.nonEmpty) {
+        // calculate balance
+        val bal = trans.foldMap {
+          case Transaction(_, _, from, to, am, _) =>
+            Map(from -> (am, 0), to -> (0, am))
+        }.map {
+          case (name, (in, out)) =>
+            Bal(name, in, out)
+        }
+
+
         val block = Block(bankId = senzieName, hash = BlockFactory.markleHash(trans), transactions = trans, timestamp = System.currentTimeMillis)
         chainDb.createBlock(block)
 

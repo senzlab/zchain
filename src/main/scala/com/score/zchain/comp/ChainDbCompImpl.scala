@@ -15,7 +15,7 @@ trait ChainDbCompImpl extends ChainDbComp {
   val chainDb = new ChainDbImpl
 
   class ChainDbImpl extends ChainDb {
-    def createTransaction(transaction: Transaction) = {
+    def createTransaction(transaction: Transaction): Unit = {
       // insert query
       val statement = QueryBuilder.insertInto("transactions")
         .value("bank_id", transaction.bankId)
@@ -56,7 +56,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       }.toList
     }
 
-    def deleteTransactions(transactions: List[Transaction]) = {
+    def deleteTransactions(transactions: List[Transaction]): Unit = {
       for (t <- transactions) {
         // delete query
         val delStmt = delete()
@@ -67,7 +67,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       }
     }
 
-    def createBlock(block: Block) = {
+    def createBlock(block: Block): Unit = {
       // UDT's
       val transType = DbFactory.cluster.getMetadata.getKeyspace("zchain").getUserType("transaction")
 
@@ -145,7 +145,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       }.toList
     }
 
-    def updateBlockSignature(block: Block, signature: Signature) = {
+    def updateBlockSignature(block: Block, signature: Signature): Unit = {
       // signature type
       val sigType = DbFactory.cluster.getMetadata.getKeyspace("zchain").getUserType("signature")
 

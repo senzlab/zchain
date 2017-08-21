@@ -22,11 +22,11 @@ class BlockSigner extends Actor with ChainDbCompImpl with AppConf with SenzLogge
 
   import BlockSigner._
 
-  override def preStart() = {
+  override def preStart(): Unit = {
     logger.debug("Start actor: " + context.self.path)
   }
 
-  override def receive = {
+  override def receive: Receive = {
     case Sign(Some(block), _, _) =>
       // sign block hash
       val sig = RSAFactory.sign(block.hash)
