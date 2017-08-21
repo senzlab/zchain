@@ -1,4 +1,4 @@
 package com.score.zchain.protocol
 
-case class Balance(bankId: String, in: Int, out: Int)
+case class Balance(bankId: String, tIn: Int, tOut: Int)
 

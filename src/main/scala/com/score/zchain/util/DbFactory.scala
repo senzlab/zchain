@@ -26,6 +26,7 @@ object DbFactory extends DbConf with SchemaConf {
 
     // create UDT
     session.execute(schemaCreateTypeTransaction)
+    session.execute(schemaCreateTypeBalance)
     session.execute(schemaCreateTypeSignature)
 
     // create tables

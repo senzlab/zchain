@@ -5,7 +5,7 @@ import java.util.UUID
 import com.datastax.driver.core.UDTValue
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.driver.core.querybuilder.QueryBuilder._
-import com.score.zchain.protocol.{Block, Signature, Transaction}
+import com.score.zchain.protocol.{Balance, Block, Signature, Transaction}
 import com.score.zchain.util.DbFactory
 
 import scala.collection.JavaConverters._
@@ -70,6 +70,7 @@ trait ChainDbCompImpl extends ChainDbComp {
     def createBlock(block: Block): Unit = {
       // UDT's
       val transType = DbFactory.cluster.getMetadata.getKeyspace("zchain").getUserType("transaction")
+      val balType = DbFactory.cluster.getMetadata.getKeyspace("zchain").getUserType("balance")
 
       // transactions
       val trans = block.transactions.map(t =>
@@ -82,12 +83,21 @@ trait ChainDbCompImpl extends ChainDbComp {
           .setLong("timestamp", t.timestamp)
       ).asJava
 
+      // balances
+      val bals = block.balances.map(b =>
+        balType.newValue
+          .setString("bank_id", b.bankId)
+          .setInt("t_in", b.tIn)
+          .setInt("t_out", b.tOut)
+      ).asJava
+
       // insert query
       val statement = QueryBuilder.insertInto("blocks")
         .value("bank_id", block.bankId)
         .value("id", block.id)
         .value("hash", block.hash)
         .value("transactions", trans)
+        .value("balances", bals)
         .value("timestamp", block.timestamp)
 
       DbFactory.session.execute(statement)
@@ -110,13 +120,18 @@ trait ChainDbCompImpl extends ChainDbComp {
           Transaction(t.getString("bank_id"), t.getUUID("id"), t.getString("from_acc"), t.getString("to_acc"), t.getInt("amount"), t.getLong("timestamp"))
         ).toList
 
+        // get balances
+        val bals = row.getSet("balances", classOf[UDTValue]).asScala.map(b =>
+          Balance(b.getString("bank_id"), b.getInt("t_in"), b.getInt("t_out"))
+        ).toList
+
         // get signatures
         val sigs = row.getSet("signatures", classOf[UDTValue]).asScala.map(s =>
           Signature(s.getString("bank_id"), s.getString("signature"))
         ).toList
 
         // create block
-        Option(Block(bankId, id, row.getString("hash"), trans, sigs, row.getLong("timestamp")))
+        Option(Block(bankId, id, row.getString("hash"), trans, bals, sigs, row.getLong("timestamp")))
       }
       else None
     }
@@ -135,13 +150,18 @@ trait ChainDbCompImpl extends ChainDbComp {
           Transaction(t.getString("bank_id"), t.getUUID("id"), t.getString("from_acc"), t.getString("to_acc"), t.getInt("amount"), t.getLong("timestamp"))
         ).toList
 
+        // get balances
+        val bals = row.getSet("balances", classOf[UDTValue]).asScala.map(b =>
+          Balance(b.getString("bank_id"), b.getInt("t_in"), b.getInt("t_out"))
+        ).toList
+
         // get signatures
         val sigs = row.getSet("signatures", classOf[UDTValue]).asScala.map(s =>
           Signature(s.getString("bank_id"), s.getString("signature"))
         ).toList
 
         // create block
-        Block(row.getString("bank_id"), row.getUUID("id"), row.getString("hash"), trans, sigs, row.getLong("timestamp"))
+        Block(row.getString("bank_id"), row.getUUID("id"), row.getString("hash"), trans, bals, sigs, row.getLong("timestamp"))
       }.toList
     }
 

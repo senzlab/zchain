@@ -7,8 +7,8 @@ import com.datastax.driver.core.utils.UUIDs
 case class Block(bankId: String,
                  id: UUID = UUIDs.random,
                  hash: String,
-                 balance: Balance,
                  transactions: List[Transaction],
+                 balances: List[Balance],
                  signatures: List[Signature] = List(),
                  timestamp: Long)
 
