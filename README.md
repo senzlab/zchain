@@ -44,6 +44,12 @@ CREATE TYPE signature (
     digsig TEXT
 )
 
+CREATE TYPE balance (
+    bank_id TEXT,
+    t_in INT,
+    t_out INT
+)
+
 CREATE TABLE zchain.transactions (
     bank_id TEXT,
     id UUID,
@@ -60,6 +66,7 @@ CREATE TABLE zchain.blocks (
     id UUID,
     hash TEXT,
     transactions SET<frozen <transaction>>,
+    balances SET<frozen <balance>>,
     signatures SET<frozen <signature>>,
     timestamp BIGINT,
 
