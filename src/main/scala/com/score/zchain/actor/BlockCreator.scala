@@ -75,6 +75,6 @@ class BlockCreator extends Actor with ChainDbCompImpl with AppConf with SenzLogg
       logger.debug("Signed block, reschedule " + context.self.path)
       context.system.scheduler.scheduleOnce(20.seconds, self, Create)
     case SignResp(None, bankId, blockId, signed) =>
-      // TODO when all peers sing the block, mark block as confirmed
+    // TODO when all peers sing the block, mark block as confirmed
   }
 }
