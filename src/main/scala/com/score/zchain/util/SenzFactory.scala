@@ -1,24 +1,45 @@
 package com.score.zchain.util
 
-import ch.qos.logback.classic.{Level, Logger}
 import com.score.zchain.config.AppConf
-import org.slf4j.LoggerFactory
 
 object SenzFactory extends AppConf {
-  val setupLogging = () => {
-    val rootLogger = LoggerFactory.getLogger("root").asInstanceOf[Logger]
-
-    senzieMode match {
-      case "DEV" =>
-        rootLogger.setLevel(Level.DEBUG)
-      case "PROD" =>
-        rootLogger.setLevel(Level.INFO)
-      case _ =>
-        rootLogger.setLevel(Level.INFO)
-    }
+  def isValid(msg: String) = {
+    msg == null || msg.isEmpty
   }
 
-  val setupKeys = () => {
-    RSAFactory.initRSAKeys()
+  def regSenz = {
+    // unsigned senz
+    val publicKey = RSAFactory.loadRSAPublicKey()
+    val timestamp = (System.currentTimeMillis / 1000).toString
+    val receiver = switchName
+    val sender = senzieName
+
+    s"SHARE #pubkey $publicKey #time $timestamp @$receiver ^$sender"
   }
+
+  def pingSenz = {
+    // unsigned senz
+    val timestamp = (System.currentTimeMillis / 1000).toString
+    val receiver = switchName
+    val sender = senzieName
+
+    s"PING #time $timestamp @$receiver ^$sender"
+  }
+
+  def blockSenz(blockId: String) = {
+    val timestamp = (System.currentTimeMillis / 1000).toString
+    val receiver = "*"
+    val sender = senzieName
+
+    s"PUT #block $blockId #sign #time $timestamp @$receiver ^$sender"
+  }
+
+  def blockSignSenz(blockId: String, bankId: String, signed: Boolean) = {
+    val timestamp = (System.currentTimeMillis / 1000).toString
+    val receiver = bankId
+    val sender = senzieName
+
+    s"DATA #block $blockId #sign $signed #time $timestamp @$receiver ^$sender"
+  }
+
 }

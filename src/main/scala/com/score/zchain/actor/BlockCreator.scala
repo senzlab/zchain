@@ -1,7 +1,7 @@
 package com.score.zchain.actor
 
 import akka.actor.{Actor, Props}
-import com.score.zchain.actor.BlockSigner.{Sign, SignResp}
+import com.score.zchain.actor.BlockSigner.Sign
 import com.score.zchain.comp.ChainDbCompImpl
 import com.score.zchain.config.AppConf
 import com.score.zchain.protocol.{Balance, Block, Transaction}
@@ -40,7 +40,7 @@ class BlockCreator extends Actor with ChainDbCompImpl with AppConf with SenzLogg
           case Transaction(_, _, from, to, am, _) =>
             Map(from -> (am, 0), to -> (0, am))
         }.map {
-          case (name, (in, out)) =>
+          case (name, (out, in)) =>
             Balance(name, in, out)
         }.toList
 
@@ -64,17 +64,10 @@ class BlockCreator extends Actor with ChainDbCompImpl with AppConf with SenzLogg
         // delete all transaction saved in the block from transactions table
         chainDb.deleteTransactions(block.transactions)
       } else {
-        // reschedule to create
-        logger.debug("No transactions, reschedule " + context.self.path)
-        context.system.scheduler.scheduleOnce(40.seconds, self, Create)
+        logger.debug("No transactions to create block" + context.self.path)
       }
-    case SignResp(Some(block), _, _, signed) =>
-      // TODO send GET #sign <block_id> senz to every peer and wait till sign response coming
 
       // reschedule to create
-      logger.debug("Signed block, reschedule " + context.self.path)
-      context.system.scheduler.scheduleOnce(20.seconds, self, Create)
-    case SignResp(None, bankId, blockId, signed) =>
-    // TODO when all peers sing the block, mark block as confirmed
+      context.system.scheduler.scheduleOnce(40.seconds, self, Create)
   }
 }

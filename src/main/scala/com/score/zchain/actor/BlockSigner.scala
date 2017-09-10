@@ -5,14 +5,14 @@ import java.util.UUID
 import akka.actor.{Actor, Props}
 import com.score.zchain.comp.ChainDbCompImpl
 import com.score.zchain.config.AppConf
-import com.score.zchain.protocol.{Block, Signature}
-import com.score.zchain.util.{RSAFactory, SenzLogger}
+import com.score.zchain.protocol.{Block, Msg, Signature}
+import com.score.zchain.util.{RSAFactory, SenzFactory, SenzLogger}
 
 object BlockSigner {
 
-  case class Sign(block: Option[Block], bankId: Option[String], blockId: Option[UUID])
+  case class Sign(block: Option[Block], bankId: Option[String], blockId: Option[String])
 
-  case class SignResp(block: Option[Block], bankId: Option[String], blockId: Option[UUID], signed: Boolean)
+  case class SignResp(block: Option[Block], bankId: Option[String], blockId: Option[String], signed: Boolean)
 
   def props = Props(classOf[BlockSigner])
 
@@ -21,6 +21,8 @@ object BlockSigner {
 class BlockSigner extends Actor with ChainDbCompImpl with AppConf with SenzLogger {
 
   import BlockSigner._
+
+  val senzActor = context.actorSelection("/user/SenzActor")
 
   override def preStart(): Unit = {
     logger.debug("Start actor: " + context.self.path)
@@ -34,14 +36,14 @@ class BlockSigner extends Actor with ChainDbCompImpl with AppConf with SenzLogge
       // update signature in db
       chainDb.updateBlockSignature(block, Signature(senzieName, sig))
 
-      // response back signed = true
-      sender ! SignResp(Option(block), None, None, signed = true)
+      // broadcast senz about the new block
+      senzActor ! Msg(SenzFactory.blockSenz(block.id.toString))
 
       // stop self
       context.stop(self)
     case Sign(None, Some(bankId), Some(blockId)) =>
       // extract block from db
-      chainDb.getBlock(bankId, blockId) match {
+      chainDb.getBlock(bankId, UUID.fromString(blockId)) match {
         case Some(b) =>
           // sign block hash
           val sig = RSAFactory.sign(b.hash)
@@ -50,10 +52,10 @@ class BlockSigner extends Actor with ChainDbCompImpl with AppConf with SenzLogge
           chainDb.updateBlockSignature(b, Signature(senzieName, sig))
 
           // response back signed = true
-          sender ! SignResp(None, Option(bankId), Option(blockId), signed = true)
+          senzActor ! Msg(SenzFactory.blockSignSenz(blockId.toString, bankId, signed = true))
         case None =>
           // response back signed = false
-          sender ! SignResp(None, Option(bankId), Option(blockId), signed = false)
+          senzActor ! Msg(SenzFactory.blockSignSenz(blockId.toString, bankId, signed = false))
       }
 
       context.stop(self)

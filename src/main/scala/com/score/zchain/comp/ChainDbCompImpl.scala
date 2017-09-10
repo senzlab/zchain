@@ -127,7 +127,7 @@ trait ChainDbCompImpl extends ChainDbComp {
 
         // get signatures
         val sigs = row.getSet("signatures", classOf[UDTValue]).asScala.map(s =>
-          Signature(s.getString("bank_id"), s.getString("signature"))
+          Signature(s.getString("bank_id"), s.getString("digsig"))
         ).toList
 
         // create block
@@ -157,7 +157,7 @@ trait ChainDbCompImpl extends ChainDbComp {
 
         // get signatures
         val sigs = row.getSet("signatures", classOf[UDTValue]).asScala.map(s =>
-          Signature(s.getString("bank_id"), s.getString("signature"))
+          Signature(s.getString("bank_id"), s.getString("digsig"))
         ).toList
 
         // create block
@@ -176,7 +176,7 @@ trait ChainDbCompImpl extends ChainDbComp {
       val sigs = block.signatures.map(s =>
         sigType.newValue
           .setString("bank_id", s.bankId)
-          .setString("id", s.digsig)
+          .setString("digsig", s.digsig)
       ) :+ sig
 
       // update query
