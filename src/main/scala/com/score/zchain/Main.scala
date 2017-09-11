@@ -1,7 +1,7 @@
 package com.score.zchain
 
 import akka.actor.ActorSystem
-import com.score.zchain.actor.{BlockCreator, BlockSigner, SenzActor}
+import com.score.zchain.actor.{BlockCreator, SenzActor}
 import com.score.zchain.util.{DbFactory, ZchainFactory}
 
 object Main extends App {
@@ -18,6 +18,5 @@ object Main extends App {
   implicit val system = ActorSystem("senz")
   system.actorOf(SenzActor.props, name = "SenzActor")
   system.actorOf(BlockCreator.props, name = "BlockCreator")
-  //system.actorOf(BlockSigner.props, name = "BlockSigner")
 
 }

@@ -14,7 +14,6 @@ object DbFactory extends DbConf with SchemaConf {
   lazy val cluster: Cluster = {
     Cluster.builder()
       .addContactPoint(cassandraHost)
-      .withPoolingOptions(poolingOptions)
       .build()
   }
 
