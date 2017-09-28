@@ -84,6 +84,33 @@ CREATE TABLE zchain.keys (
 )
 ```
 
+## Create lucene index and query for test
+
+```
+CREATE CUSTOM INDEX transactions_index ON transactions ()
+USING 'com.stratio.cassandra.lucene.Index'
+WITH OPTIONS = {
+   'refresh_seconds': '1',
+   'schema': '{
+      fields: {
+         "bank_id": {type: "string"},
+         "from_acc": {type: "string"},
+         "to_acc": {type: "string"}
+      }
+   }'
+}
+
+SELECT * FROM transactions WHERE expr(transactions_index, '{
+    filter: [
+        {type: "wildcard", field:"bank_id", value:"sampath"},
+        {type: "wildcard", field:"from_acc", value:"*"},
+        {type: "wildcard", field:"to_acc", value:"*"}
+    ]
+}')
+
+```
+
 ## 5. Run zchain
 
-Simply run main method. We will dockerize this project later
+Run via docker compose
+
